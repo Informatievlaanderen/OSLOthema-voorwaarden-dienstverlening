@@ -1,21 +1,19 @@
-# OSLOthema-mijnThema
+# OSLOthema-Voorwaarden Dienstverlening
 
 **_Editors:_**
-- first read [deze richtlijnen](https://github.com/Informatievlaanderen/OSLO-toolchain/blob/master/doc-user/README.md) .
-- Use [TagsAndNotes.xlsm](https://github.com/Informatievlaanderen/OSLO-allerleiTooltjes/tree/master/EA-Excel/TagsAndNotes) 
-  to edit tags in Excel. The files `*.xlsm` are included in the repo as git-ignored.
+- Lees eerst [deze richtlijnen](https://github.com/Informatievlaanderen/OSLO-toolchain/blob/master/doc-user/README.md) .
 
 
 ## Administrative information
 
 ### Tags
-To refer to the available git tags to create a publication point from, see the "Releases" tab of this repo.
+Voor de beschikbare git tags om naar te refereren bij het maken van publicaties, zie de "Releases" tab in deze repo.
 
 
 ### Branches
-The organisation and meaning of the git branches are documented in this table.
+Overzicht van git branches die niet behoren tot de branches voor fixes die gedocumenteerd werden in de richtlijnen.
 
 
-| Branch | Purpose | Active (y/n) |
+| Branch | Doel | Actief? (j/n) |
 | ------ | --------- | ---------------- | 
 |  |  |  |
