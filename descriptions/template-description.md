@@ -1,2 +1,1 @@
-Provide a description for this standardization trajectory. 
-This text will be shown on the OSLO standards registry.
+Het OSLO Publiecatie traject ‘Voorwaarden Dienstverlening’ moet helpen om makkelijk te bepalen of een persoon recht heeft of moet voldoen aan een bepaalde publieke dienstverlening. Op basis van internationale standaarden wordt deze standaard opgebouwd en verrijkt met eigen geïnstantieerde termen.
