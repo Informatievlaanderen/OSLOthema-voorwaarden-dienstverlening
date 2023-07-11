@@ -9,8 +9,8 @@
     "beschrijving" : "template-description.md",
     "specificatiedocument": [
         {
-        "naam": "Applicatieprofiel Publicatie-Advertentie",
-        "waarde": ""
+        "naam": "Applicatieprofiel Voorwaarden Dienstverlening",
+        "waarde": "https://data.vlaanderen.be/doc/applicatieprofiel/publicatie-advertentie/kandidaatstandaard/2023-07-11"
         }
     ],
     "documentatie": [
