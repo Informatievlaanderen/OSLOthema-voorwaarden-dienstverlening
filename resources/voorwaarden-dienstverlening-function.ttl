@@ -1,0 +1,266 @@
+@prefix cpsv: <http://purl.org/vocab/cpsv#> .
+@prefix dbpedia: <http://dbpedia.org/ontology#> .
+@prefix dc: <http://purl.org/dc/terms#> .
+@prefix dcat: <http://www.w3.org/ns/dcat#> .
+@prefix dossier: <https://data.vlaanderen.be/ns/dossier#> .
+@prefix eli: <http://data.europa.eu/eli/ontology#> .
+@prefix eu: <https://data.europa.eu/m8g#> .
+@prefix example: <https://example.org/ns#> .
+@prefix fno: <https://w3id.org/function/ontology#> .
+@prefix fnoc: <https://w3id.org/function/vocabulary/composition#> .
+@prefix fnoi: <https://w3id.org/function/vocabulary/implementation#> .
+@prefix foaf: <http://xmlns.com/foaf/0.1#> .
+@prefix p-plan: <http://purl.org/net/p-plan#> .	
+@prefix persoon: <https://data.vlaanderen.be/ns/persoon#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix sd: <https://www.w3.org/TR/sparql12-service-description/#lang-sparql12query> .
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix skos: 	<http://www.w3.org/2004/02/skos/core#> .
+@prefix step: <https://fast.ilabt.imec.be/ns/oslo-steps#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+# I. Legal backing.
+_:publicService a cpsv:PublicService ;
+    cpsv:follows _:rule ;
+    example:instantiates _:plan .
+
+_:rule a cpsv:Rule ;
+    cpsv:implements _:legalResource .
+
+_:legalResource a eli:LegalResource .
+
+
+# II. Definition of the procedure.
+# In this example, p-plan is used to define the requirement sequence.
+_:plan a p-plan:Plan ;
+    dc:description "Mariage declaration" .
+
+_:formalStep a p-plan:Step, fno:Problem, eu:Requirement ;
+    dc:description "Establish that registered person is above 18 of age." ;
+    p-plan:isStepOfPlan _:plan ;
+    example:hasFunction _:registeredPersonAbove18;
+    step:hasStateShape sh:NodeShape ;
+    eu:hasSupportingEvidence _:evidence ;
+    eu:fulfils _:rule .
+
+# In this example, it is not useful to verify the shape of the .
+# @prefix persoon: <https://data.vlaanderen.be/ns/persoon#> .
+# @prefix sh: <http://www.w3.org/ns/shacl#> .
+#
+# persoon:GeregistreerdPersoon
+#     a sh:NodeShape ;
+#     sh:targetNode persoon:GeregistreerdPersoon .
+_:stateShape a sh:NodeShape .
+
+_:integerAgeVerificationAlgorithm a fno:Algorithm ;
+    dc:description "Obtain the age from the date of birth of registered person. Compare age with integer threshold." .
+
+_:dobAgeVerificationAlgorithm a fno:Algorithm ;
+    dc:description "Compute the threshold date from the current date. Compare the threshold date to the date of birth of the registered person." .
+
+# Function 1
+# The fno:function abstracts away the age majority verification logic.
+# This logic is specified in smaller (reusable) functions (ageFromDateOfBirth and compareAgeToThreshold).
+_:registeredPersonAbove18 a fno:Function ;
+    fno:solves _:formalStep ;
+    fno:implements _:integerAgeVerificationAlgorithm ;
+    fno:expects (_:personParameter) ;
+    fno:returns (_:registeredPersonAbove18Output) .
+
+# fno:predicate is used as binding mechanism between function definition and execution.
+_:personParameter a fno:Parameter ;
+    fno:predicate example:personIn ;
+    fno:type persoon:GeregistreerdPersoon ;
+    fno:required "true"^^xsd:boolean .
+
+_:registeredPersonAbove18Output a fno:Output ;
+    fno:predicate example:isAbove18 ;
+    fno:type xsd:boolean .
+
+# Work in progress.
+# _:functionComposition a fnoc:Composition ;
+#     fnoc:composedOf [
+#         fnoc:mapFrom [
+#             fnoc:constituentFunction _:ageFromDateOfBirth  ;
+#             fnoc:functionOuput _:personOutput:
+#         ] ;
+#         fnoc:mapTo [
+#             fnoc:constituentFunction  ;
+#             fnoc:functionParameter 
+#         ],
+#         # ...
+#     ] .
+
+# Function 2
+_:ageFromDateOfBirth a fno:Function ;
+    fno:expects (_:personParameter) ;
+    fno:returns _:ageOutput .
+
+_:ageOutput a fno:Output ;
+    fno:predicate example:age ;
+    fno:type xsd:integer .
+
+# PREFIX example: <https://example.org/ns#>
+# PREFIX persoon: <https://data.vlaanderen.be/ns/persoon#>
+# PREFIX prov: <http://www.w3.org/ns/prov#>
+# PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+# INSERT DATA {
+#   GRAPH _:graph {
+#     ?persoon example:age "32" .  # Add age to the graph
+#   }
+# }
+# WHERE {
+#   ?persoon a persoon:Geboorte ;
+#           persoon:datum ?dob .
+
+#   BIND(now() AS ?currentDateTime)
+
+#   BIND(year(?currentDateTime) - year(?dob) AS ?yearsDiff)
+#   BIND(month(?currentDateTime) - month(?dob) AS ?monthsDiff)
+#   BIND(day(?currentDateTime) - day(?dob) AS ?daysDiff)
+
+#   BIND(IF(?monthsDiff < 0 || (?monthsDiff = 0 && ?daysDiff < 0), ?yearsDiff - 1, ?yearsDiff) AS ?age)
+# }
+_:ageFromDateOfBirthImplementation a fnoi:SPARQLImplementation .
+
+# In this case, the mapping class is only used to connect execution to implementation.
+# This may indicate a shortcoming of the fno model. When the implementation is a SPARQL query, there may be no need for a mapping.
+_:ageFromDateOfBirthMapping a fno:Mapping ;
+    fno:implementation _:ageFromDateOfBirthImplementation .
+
+# Function 3
+# The function definition chosen here is sub-optimal as it is not easily reusable.
+_:compareAgeToThreshold a fno:Function ;
+    fno:expects (_:personParameter) ;
+    fno:returns (_:registeredPersonAbove18Output) .
+
+# @prefix example: <https://example.org/ns#> .
+# @prefix person: <http://www.w3.org/ns/person#> .
+# @prefix persoon: <https://data.vlaanderen.be/ns/persoon#> .
+# @prefix sh: <http://www.w3.org/ns/shacl#> .
+# @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+# persoon:GeregistreerdPersoon
+#     a sh:NodeShape ;
+#     sh:targetNode persoon:GeregistreerdPersoon ;
+#     sh:property [
+#         sh:path example:age ;
+# 		  sh:datatype xsd:integer ;
+#         sh:minInclusive 18 ;
+#     ] .
+_:compareAgeToThresholdImplementation a example:SHACLImplementation .
+
+_:compareAgeToThresholdMapping a fno:Mapping ;
+    fno:implementation _:compareAgeToThresholdImplementation .
+
+_:subject a persoon:GeregistreerdPersoon ;
+    persoon:registratie "90110848689" ;
+    persoon:heeftGeboorte _:dob ;
+    persoon:heeftBurgelijkeStaat _:maritalStatus .
+
+_:dob a persoon:Geboorte ;
+    persoon:datum "1990-11-08T00:00:00"^^xsd:dateTime .
+
+_:maritalStatus a persoon:BurgelijkeStaat ;
+    persoon:type skos:Single .
+
+# III. Execution of the procedure.
+_:case a dbpedia:Case ;
+    dossier:doorloopt _:step .
+
+_:step a p-plan:Activity, dossier:Procedurestap ;
+    p-plan:correspondsToStep _:formalStep ;
+    prov:used _:registeredPersonAbove18Execution ;
+    example:hasEvidence _:evidence .
+
+_:evidence a eu:Evidence;
+    dcat:type "Authentication certificate of eID card";
+    dc:isAbout _:subject ;
+    dcat:distribution _:entity1 ;
+    dc:conformsTo "http://docs.oasis-open.org/pkcs11/pkcs11-curr/v2.40/errata01/os/pkcs11-curr-v2.40-errata01-oscomplete.doc" .
+
+_:ageFromDateOfBirthExecution a p-plan:Activity, fno:Execution ;
+    prov:used _:entity1 ;
+    fno:executes _:ageFromDateOfBirth ;
+    fno:uses _:ageFromDateOfBirthMapping ;
+    example:personIn _:entity1 ;
+    example:age _:entity2 .
+
+_:compareAgeToThresholdExecution a p-plan:Activity, fno:Execution ;
+    prov:used _:entity2 ;
+    fno:executes _:compareAgeToThreshold ;
+    fno:uses _:compareAgeToThresholdMapping ;
+    example:personIn _:entity2 ;
+    example:isAbove18 "true"^^xsd:boolean .
+
+_:registeredPersonAbove18Execution a p-plan:Activity, fno:Execution ;
+    prov:used _:entity3 ;
+    fno:executes _:registeredPersonAbove18 ;
+    example:personIn _:entity1 ;
+    example:isAbove18 "true"^^xsd:boolean .
+
+_:entity1 a p-plan:Entity, dcat:Distribution ;
+    dcat:mediaType <http://www.iana.org/assignments/media-types/application/ld+json> ;
+    dc:conformsTo persoon:GeregistreerdPersoon ;
+    rdf:value """
+    {
+        "@context": [
+        "https://data.vlaanderen.be/context/persoon-basis.jsonld",
+        {
+            "xsd": "http://www.w3.org/2001/XMLSchema#",
+            "example": "https://www.example.org/ns#"
+        }
+        ],
+        "@id": "_:subject",
+        "@type": "GeregistreerdPersoon",
+        "heeftGeboorte": {
+            "@id": "_:dob",
+            "@type": "Geboorte",
+            "datum": {
+                "@value": "1990-11-08T00:00:00",
+                "@type": "xsd:dateTime"
+            }
+        },
+        "example:age": {
+            "@value": "32",
+            "@type": "xsd:integer"
+        }
+    }
+    """ .
+
+_:entity2 a p-plan:Entity ;
+    dcat:mediaType <http://www.iana.org/assignments/media-types/application/ld+json> ;
+    rdf:value "[{"age":"\"32\"^^http://www.w3.org/2001/XMLSchema#integer"}]" .
+
+_:entity3 a p-plan:Entity ;
+    prov:wasGeneratedBy _:ageFromDateOfBirthExecution ;
+    prov:value """
+    {
+        "@context": [
+        "https://data.vlaanderen.be/context/persoon-basis.jsonld",
+        {
+            "xsd": "http://www.w3.org/2001/XMLSchema#",
+            "example": "https://example.org/ns#" }
+        ],
+        "@id": "_:subject",
+        "@type": "GeregistreerdPersoon",
+        "heeftGeboorte": {
+            "@id": "_:dob",
+            "@type": "Geboorte",
+            "datum": {
+                "@value": "1990-11-08T00:00:00",
+                "@type": "xsd:dateTime"
+            }
+        },
+        "example:age": {
+            "@value": "32",
+            "@type": "xsd:integer"
+        }
+    }
+    """ .
+
+_:entity3 a p-plan:Entity ;
+    prov:wasGeneratedBy _:compareAgeToThresholdExecution ;
+    prov:value "true"^^xsd:boolean .
