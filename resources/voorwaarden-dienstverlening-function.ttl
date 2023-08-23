@@ -20,6 +20,10 @@
 @prefix step: <https://fast.ilabt.imec.be/ns/oslo-steps#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
+# This example builds upon the CCCEV, OSLO-STEPS, P-PLAN and Function Ontology vocabularies.
+# Here, p-plan is only used to define the requirement sequence.
+# As soon as a step is machine-processable, the Function Ontology takes over. 
+
 # I. Legal backing.
 _:publicService a cpsv:PublicService ;
     cpsv:follows _:rule ;
@@ -32,19 +36,18 @@ _:legalResource a eli:LegalResource .
 
 
 # II. Definition of the procedure.
-# In this example, p-plan is used to define the requirement sequence.
-_:plan a p-plan:Plan ;
-    dc:description "Mariage declaration" .
+_:mariageDeclaration a p-plan:MultiStep ;
+    dc:description "Mariage declaration" ;
+    p-plan:isStepOfPlan _:mariage ;
+    p-plan:isDecomposedAsPlan _:ageAbove18 .
 
-_:formalStep a p-plan:Step, fno:Problem, eu:Requirement ;
+_:ageAbove18 a p-plan:Plan, eu:Requirement, fno:Problem ;
     dc:description "Establish that registered person is above 18 of age." ;
     p-plan:isStepOfPlan _:plan ;
-    example:hasFunction _:registeredPersonAbove18;
     step:hasStateShape sh:NodeShape ;
     eu:hasSupportingEvidence _:evidence ;
     eu:fulfils _:rule .
 
-# In this example, it is not useful to verify the shape of the .
 # @prefix persoon: <https://data.vlaanderen.be/ns/persoon#> .
 # @prefix sh: <http://www.w3.org/ns/shacl#> .
 #
@@ -63,7 +66,7 @@ _:dobAgeVerificationAlgorithm a fno:Algorithm ;
 # The fno:function abstracts away the age majority verification logic.
 # This logic is specified in smaller (reusable) functions (ageFromDateOfBirth and compareAgeToThreshold).
 _:registeredPersonAbove18 a fno:Function ;
-    fno:solves _:formalStep ;
+    fno:solves _:ageAbove18 ;
     fno:implements _:integerAgeVerificationAlgorithm ;
     fno:expects (_:personParameter) ;
     fno:returns (_:registeredPersonAbove18Output) .
@@ -168,10 +171,9 @@ _:maritalStatus a persoon:BurgelijkeStaat ;
 
 # III. Execution of the procedure.
 _:case a dbpedia:Case ;
-    dossier:doorloopt _:step .
+    dossier:doorloopt _:activity .
 
-_:step a p-plan:Activity, dossier:Procedurestap ;
-    p-plan:correspondsToStep _:formalStep ;
+_:activity a p-plan:Activity, dossier:Procedurestap ;
     prov:used _:registeredPersonAbove18Execution ;
     example:hasEvidence _:evidence .
 
