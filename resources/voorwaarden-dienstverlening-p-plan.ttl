@@ -1,4 +1,4 @@
-@prefix cpsv: <http://purl.org/vocab/cpsv#>
+@prefix cpsv: <http://purl.org/vocab/cpsv#> .
 @prefix dbpedia: <http://dbpedia.org/ontology#> .
 @prefix dc: <http://purl.org/dc/terms#> .
 @prefix dcat: <http://www.w3.org/ns/dcat#> .
@@ -16,14 +16,14 @@
 @prefix step: <https://fast.ilabt.imec.be/ns/oslo-steps#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
-# This example builds upon the CCCEV, OSLO-STEPS and P-PLAN vocabularies.
+# This example builds upon the CCCEV, OSLO-STEPS and p-plan vocabularies.
 # In order to reduce complexity, this example does not concern itself with the reasoning at each step / activity. 
 # This is outside the model, but at each state the activity output is added to the knowledge graph.
 
 # I. Legal backing.
 _:publicService a cpsv:PublicService ;
-    cpsv:follows _:rule ;
-    example:instantiates _:plan .
+    example:instantiates _:mariage ;
+    cpsv:follows _:rule .
 
 _:rule a cpsv:Rule ;
     cpsv:implements _:legalResource .
@@ -31,28 +31,32 @@ _:rule a cpsv:Rule ;
 _:legalResource a eli:LegalResource .
 
 # II. Definition of the procedure.
-_:mariageDeclaration a p-plan:MultiStep ;
+_:mariageDeclaration a p-plan:Plan ;
     dc:description "Mariage declaration" ;
-    p-plan:isStepOfPlan _:mariage ;
-    p-plan:isDecomposedAsPlan _:ageAbove18 .
-
-_:ageAbove18 a p-plan:Plan, eu:Requirement ;
     p-plan:isSubPlanOfPlan _:mariage ;
+
+_:hasRequiredAgeToMarry a p-plan:Plan,eu:Requirement ;
+    dc:description "Establish that registered person is sufficiently old to marry." ;
+    p-plan:isSubPlanOfPlan _:mariageDeclaration ;
+    eu:hasSupportingEvidence _:courtDecision .
+
+_:ageAbove18 a p-plan, eu:Requirement ;
+    p-plan:isSubPlanOfPlan _:hasRequiredAgeToMarry ;
     dc:description "Establish that registered person is above 18 of age." ;
-    eu:hasSupportingEvidence _:evidence ;
+    eu:hasSupportingEvidence _:eID ;
     eu:fulfils _:rule .
 
-_:evidence a eu:Evidence;
+_:eID a eu:Evidence;
     dcat:identifier "xxx-xxxxxxx-xx" ;
     dcat:type "Authentication certificate of eID card";
     dc:isAbout _:subject ;
-    dcat:distribution _:entity1 ;
-    
-_:formalStep1 a p-plan:Step, eu:Requirement ;
+    eu:supportsConcept _:obtainAge .
+    # dcat:distribution _:entity1 ;
+
+_:obtainAge a p-plan:Step, eu:InformationConcept ;
     dc:description "Obtain the age of citizen based on the date of birth." ;
     p-plan:isStepOfPlan _:ageAbove18 ;
-    step:hasStateShape _:stateShape1 ;
-    p-plan:hasInputVar _:inputVariable1 ;
+    step:requiresState _:stateShape1 .
 
 # @prefix persoon: <https://data.vlaanderen.be/ns/persoon#> .
 # @prefix sh: <http://www.w3.org/ns/shacl#> .
@@ -60,15 +64,37 @@ _:formalStep1 a p-plan:Step, eu:Requirement ;
 # persoon:GeregistreerdPersoon
 #     a sh:NodeShape ;
 #     sh:targetNode persoon:GeregistreerdPersoon .
-_:stateShape1 a sh:NodeShape .
+_:stateShape1 a sh:NodeShape, p-plan:Variable .
 
-_:inputVariable1 a persoon:GeregistreerdPersoon .
-
-_:formalStep2 a p-plan:Step, eu:Requirement ;
+_:isAgeAbove18 a p-plan:Step ;
     dc:description "Verify that the registered person's age is above 18." ;
     p-plan:isStepOfPlan _:ageAbove18 ;
-    p-plan:isPreceededBy _:formalStep1 ;
-    step:hasStateShape _:stateShape2 ;
+    p-plan:isPreceededBy _:obtainAge ;
+    step:requiresState _:stateShape2 .
+
+# @prefix persoon: <https://data.vlaanderen.be/ns/persoon#> .
+# @prefix sh: <http://www.w3.org/ns/shacl#> .
+# @prefix example: <http://example.org/ns#> .
+
+# persoon:GeregistreerdPersoon
+#     a sh:NodeShape ;
+#     sh:targetNode persoon:GeregistreerdPersoon ;
+#     sh:property [
+#         sh:path example:age ;
+#         sh:datatype xsd:integer ;
+#         sh:minCount 1 
+#     ] .
+_:stateShape2 a sh:NodeShape, p-plan:Variable .
+
+ _:courtDecision a eu:Evidence ;
+    dcat:type "Decision family court";
+    dc:isAbout _:subject ;
+    eu:supportsConcept _:personIsDeclaredMajor .
+
+_:personIsDeclaredMajor a p-plan:Step, eu:InformationConcept ;
+    dc:description "Verify whether the family court declared the person major." ;
+    p-plan:isStepOfPlan _:hasRequiredAgeToMarry ;
+    step:requiresState _:stateShape3 .
 
 # @prefix example: <https://example.org/ns#> .
 # @prefix person: <http://www.w3.org/ns/person#> .
@@ -80,11 +106,10 @@ _:formalStep2 a p-plan:Step, eu:Requirement ;
 #     a sh:NodeShape ;
 #     sh:targetNode persoon:GeregistreerdPersoon ;
 #     sh:property [
-#         sh:path example:Age ;
-# 		  sh:datatype xsd:integer ;
-#         sh:minInclusive 18 ;
+#        sh:path example:isDeclaredMajor ;
+#        sh:datatype xsd:boolean ;
 #     ] .
-_:stateShape2 a sh:NodeShape .
+_:stateShape3 a sh:NodeShape, p-plan:Variable .
 
 _:subject a persoon:GeregistreerdPersoon ;
     persoon:registratie "90110848689" ;
@@ -102,14 +127,12 @@ _:case a dbpedia:Case .
     dossier:doorloopt (_:activity1 _:activity2)
 
 _:activity1 a p-plan:Activity, dossier:Procedurestap ;
-    p-plan:correspondsToStep _:formalStep1 ;
+    p-plan:correspondsToStep _:obtainAge ;
     prov:used _:entity1 ;
 
-_:entity1 a prov:Entity, dcat:Distribution ;
-    p-plan:correspondsToVariable _:inputVariable1 ;
-    dcat:mediaType <http://www.iana.org/assignments/media-types/application/ld+json> ;
-    dc:conformsTo persoon:GeregistreerdPersoon ;
-    prov:value """
+_:entity1 a p-plan:Entity, eu:SupportedValue ;
+    p-plan:correspondsToVariable _:stateShape1 ;
+    eu:value """
     {
         "@context": [
         "https://data.vlaanderen.be/context/persoon-basis.jsonld",
@@ -129,5 +152,5 @@ _:entity1 a prov:Entity, dcat:Distribution ;
     """ .
 
 _:activity2 a p-plan:Activity, dossier:Procedurestap ;
-    p-plan:correspondsToStep _:formalStep2 ;
+    p-plan:correspondsToStep _:isAgeAbove18 ;
     prov:wasInformedBy _:activity1 .
