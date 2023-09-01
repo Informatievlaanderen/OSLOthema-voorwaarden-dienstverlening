@@ -34,34 +34,36 @@ _:legalResource a eli:LegalResource .
 _:mariageDeclaration a p-plan:Plan ;
     dc:description "Mariage declaration" ;
     p-plan:isSubPlanOfPlan _:mariage ;
+     eu:hasSupportingEvidence _:extractPopulationRegistry .
 
 # 2.1. Age requirement
 
 _:hasRequiredAgeToMarry a p-plan:Plan,eu:Requirement ;
-    dc:description "Establish that registered person is sufficiently old to marry." ;
+    dc:description "Establish that registered person is sufficiently old to marry" ;
     p-plan:isSubPlanOfPlan _:mariageDeclaration ;
-    eu:hasSupportingEvidence _:courtDecision .
+    eu:hasSupportingEvidence (_:courtDecision _:recordNationalRegister) .
 
-_:ageAbove18 a p-plan, eu:Requirement ;
+_:ageAbove18 a p-plan:Plan, eu:Requirement ;
     p-plan:isSubPlanOfPlan _:hasRequiredAgeToMarry ;
-    dc:description "Establish that registered person is above 18 of age." ;
-    eu:hasSupportingEvidence _:eID ;
+    dc:description "Establish that registered person is above 18 of age" ;
+    eu:hasSupportingEvidence _:recordNationalRegister ;
     eu:fulfils _:rule .
 
-_:eID a eu:Evidence ;
-    dcat:identifier "xxx-xxxxxxx-xx" ;
-    dcat:type "Authentication certificate of eID card";
-    dc:isAbout _:subject ;
+_:recordNationalRegister a eu:Evidence ;
+    dc:description "Individual record in national register";
     eu:supportsConcept _:obtainAge .
-    dcat:distribution _:eIDDistribution ;
+    dcat:distribution _:recordNationalRegisterDistribution ;
 
-_:eIDDistribution a dcat:Distribution ;
+_:recordNationalRegisterDistribution a dcat:Distribution ;
     dc:conformsTo persoon:GeregistreerdPersoon .
 
-_:obtainAge a p-plan:Step, eu:InformationConcept ;
-    dc:description "Obtain the age of citizen based on the date of birth." ;
+_:obtainAge a p-plan:Step ;
+    dc:description "Obtain the age of citizen based on the date of birth" ;
     p-plan:isStepOfPlan _:ageAbove18 ;
-    step:requiresState _:stateShape1 .
+    step:requiresState _:state1 .
+
+_:state1 a step:State, eu:InformationConcept ;
+    step:hasStateShape _:shape1 .
 
 # @prefix persoon: <https://data.vlaanderen.be/ns/persoon#> .
 # @prefix sh: <http://www.w3.org/ns/shacl#> .
@@ -69,13 +71,16 @@ _:obtainAge a p-plan:Step, eu:InformationConcept ;
 # persoon:GeregistreerdPersoon
 #     a sh:NodeShape ;
 #     sh:targetNode persoon:GeregistreerdPersoon .
-_:stateShape1 a sh:NodeShape, p-plan:Variable .
+_:shape1 a sh:NodeShape .
 
 _:isAgeAbove18 a p-plan:Step ;
-    dc:description "Verify that the registered person's age is above 18." ;
+    dc:description "Verify that the registered person's age is above 18" ;
     p-plan:isStepOfPlan _:ageAbove18 ;
     p-plan:isPreceededBy _:obtainAge ;
-    step:requiresState _:stateShape2 .
+    step:requiresState _:state2 .
+
+_:state2 a step:State, eu:InformationConcept ;
+    step:hasStateShape _:shape2 .
 
 # @prefix persoon: <https://data.vlaanderen.be/ns/persoon#> .
 # @prefix sh: <http://www.w3.org/ns/shacl#> .
@@ -89,17 +94,21 @@ _:isAgeAbove18 a p-plan:Step ;
 #         sh:datatype xsd:integer ;
 #         sh:minCount 1 
 #     ] .
-_:stateShape2 a sh:NodeShape, p-plan:Variable .
+_:shape2 a sh:NodeShape .
 
  _:courtDecision a eu:Evidence ;
-    dcat:type "Court decision";
+    dc:description "Court decision re article 145 Civil Code";
     dc:isAbout _:subject ;
     eu:supportsConcept _:personIsDeclaredMajor .
 
-_:personIsDeclaredMajor a p-plan:Step, eu:InformationConcept ;
-    dc:description "Verify whether the family court declared the person major." ;
+_:personMustNotBeAbove18 a p-plan:Step, eu:InformationConcept ;
+    dc:description "Verify whether the family court declared the person major" ;
     p-plan:isStepOfPlan _:hasRequiredAgeToMarry ;
-    step:requiresState _:stateShape3 .
+    p-plan:isPreceededBy _:ageAbove18 ;
+    step:requiresState _:state3 .
+
+_:state3 a step:State, eu:InformationConcept ;
+    step:hasStateShape _:shape3 .
 
 # @prefix example: <https://example.org/ns#> .
 # @prefix person: <http://www.w3.org/ns/person#> .
@@ -114,28 +123,9 @@ _:personIsDeclaredMajor a p-plan:Step, eu:InformationConcept ;
 #        sh:path example:isDeclaredMajor ;
 #        sh:datatype xsd:boolean ;
 #     ] .
-_:stateShape3 a sh:NodeShape, p-plan:Variable .
-
-_:subject a persoon:GeregistreerdPersoon ;
-    persoon:registratie "90110848689" ;
-    persoon:heeftGeboorte _:dob ;
-    persoon:heeftBurgelijkeStaat _:maritalStatus .
-
-_:dob a persoon:Geboorte ;
-    persoon:datum "1990-11-08T00:00:00"^^xsd:dateTime .
-
-_:maritalStatus a persoon:BurgelijkeStaat ;
-    persoon:type _:maritalStatusType .
-
-_:maritalStatusType a skos:Concept ;
-    skos:preLabel "Ongehuwd" .
+_:shape3 a sh:NodeShape .
 
 # 2.2. Bachelor requirement
-_:isBachelor a p-plan:Plan,eu:Requirement ;
-    dc:description "The marital status is single." ;
-    p-plan:isSubPlanOfPlan _:mariageDeclaration ;
-    eu:hasSupportingEvidence _:extractPopulationRegistry .
-
 _:extractPopulationRegistry a eu:Evidence ;
     dcat:type "Extract of the population registry";
     dc:isAbout _:subject ;
@@ -145,10 +135,12 @@ _:extractPopulationRegistry a eu:Evidence ;
 _:extractPopulationRegistryDistribution a dcat:Distribution ;
     dc:conformsTo persoon:GeregistreerdPersoon .
 
-_:maritalStatusIsSingle a eu:InformationConcept, p-plan:Step ;
-    dc:description "Verify whether the marital status is single." ;
-    p-plan:isStepOfPlan _:isBachelor ;
-    step:requiresState _:stateShape4 .
+_:maritalStatusIsSingle a p-plan:Step ;
+    dc:description "Verify whether the marital status is single" ;
+    step:requiresState _:state4 .
+
+_:state4 a step:State, eu:InformationConcept ;
+    step:hasStateShape _:shape4 .
 
 # @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 # @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
@@ -179,36 +171,31 @@ _:maritalStatusIsSingle a eu:InformationConcept, p-plan:Step ;
 #         sh:path skos:preLabel ;
 #         sh:minCount 1 ;
 #     ] .
-_:stateShape4 a sh:NodeShape, p-plan:Variable .
-
+_:shape4 a sh:NodeShape, p-plan:Variable .
 
 # 3. Execution of the procedure.
+
 _:case a dbpedia:Case .
     dossier:doorloopt (_:activity1 _:activity2)
 
 _:activity1 a p-plan:Activity, dossier:Procedurestap ;
     p-plan:correspondsToStep _:obtainAge ;
-    prov:used _:entity1 ;
+    prov:used _:subject ;
 
-_:entity1 a p-plan:Entity ;
-    p-plan:correspondsToVariable _:stateShape1 ;
-    prov:value """
-    {
-        "@context": [
-        "https://data.vlaanderen.be/context/persoon-basis.jsonld",
-        {"xsd": "http://www.w3.org/2001/XMLSchema#"}
-        ],
-        "@id": "_:subject",
-        "@type": "GeregistreerdPersoon",
-        "heeftGeboorte": {
-            "@type": "Geboorte",
-            "datum": {
-                "@value": "1990-11-08T00:00:00",
-                "@type": "xsd:dateTime"
-            }
-        }
-    }
-    """ .
+_:subject a persoon:GeregistreerdPersoon, p-plan:Entity ;
+    p-plan:correspondsToVariable _:shape1 ;
+    persoon:registratie "90110848689" ;
+    persoon:heeftGeboorte _:dob ;
+    persoon:heeftBurgelijkeStaat _:maritalStatus .
+
+_:dob a persoon:Geboorte ;
+    persoon:datum "1990-11-08T00:00:00"^^xsd:dateTime .
+
+_:maritalStatus a persoon:BurgelijkeStaat ;
+    persoon:type _:maritalStatusType .
+
+_:maritalStatusType a skos:Concept ;
+    skos:preLabel "Ongehuwd" .
 
 _:activity2 a p-plan:Activity, dossier:Procedurestap ;
     p-plan:correspondsToStep _:isAgeAbove18 ;
