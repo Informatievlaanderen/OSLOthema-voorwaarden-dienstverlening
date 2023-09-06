@@ -205,7 +205,7 @@ _:shape4 a sh:NodeShape .
 _:case a dbpedia:Case .
     dossier:doorloopt (_:activity1 _:activity2 _:activity3)
 
-_:entity1 a persoon:GeregistreerdPersoon, p-plan:Entity ;
+_:entity1 a persoon:GeregistreerdPersoon, dossier:Stuk ;
     p-plan:correspondsToVariable _:shape1 ;
     persoon:heeftGeboorte _:dob .
 
@@ -213,23 +213,23 @@ _:dob a persoon:Geboorte ;
     persoon:datum "1990-11-08T00:00:00"^^xsd:dateTime .
 
 # Multistep are not scheduled for execution
-_:activity1 a p-plan:Activity, dossier:ProcedureStap ;
+_:activity1 a p-plan:Activity ;
     p-plan:correspondsToStep _:obtainAge ;
     prov:used _:entity1 .
 
-_:activity2 a p-plan:Activity, dossier:ProcedureStap ;
+_:activity2 a p-plan:Activity ;
     p-plan:correspondsToStep _:isAgeAbove18 ;
     prov:wasInformedBy _:activity1 .
 
-# _:entity2 a persoon:GeregistreerdPersoon, p-plan:Entity ;
+# _:entity2 a persoon:GeregistreerdPersoon, dossier:Stuk ;
 #     p-plan:correspondsToVariable _:shape2 ;
 #     example:age "32"^^xsd:integer .
 
-_:activity3 a p-plan:Activity, dossier:ProcedureStap ;
+_:activity3 a p-plan:Activity ;
     p-plan:correspondsToStep _:maritalStatusIsSingle ;
     prov:used _:entity3 .
 
-_:entity3 a persoon:GeregistreerdPersoon, p-plan:Entity ;
+_:entity3 a persoon:GeregistreerdPersoon, dossier:Stuk ;
     p-plan:correspondsToVariable _:shape4 ;
     persoon:heeftBurgerlijkeStaat _:maritalStatus .
 
