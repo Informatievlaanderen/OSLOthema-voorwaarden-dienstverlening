@@ -42,7 +42,7 @@ _:mariageDeclaration a p-plan:MultiStep ;
     p-plan:isDecomposedAsPlan _:ageAbove18 .
 
 _:ageAbove18 a p-plan:Plan, eu:Requirement, fno:Problem ;
-    dc:description "Establish that registered person is above 18 of age." ;
+    dc:description "Establish that registered person is above 18 of age" ;
     p-plan:isStepOfPlan _:plan ;
     step:hasStateShape sh:NodeShape ;
     eu:hasSupportingEvidence _:evidence ;
@@ -57,10 +57,10 @@ _:ageAbove18 a p-plan:Plan, eu:Requirement, fno:Problem ;
 _:stateShape a sh:NodeShape .
 
 _:integerAgeVerificationAlgorithm a fno:Algorithm ;
-    dc:description "Obtain the age from the date of birth of registered person. Compare age with integer threshold." .
+    dc:description "Obtain the age from the date of birth of registered person. Compare age with integer threshold" .
 
 _:dobAgeVerificationAlgorithm a fno:Algorithm ;
-    dc:description "Compute the threshold date from the current date. Compare the threshold date to the date of birth of the registered person." .
+    dc:description "Compute the threshold date from the current date. Compare the threshold date to the date of birth of the registered person" .
 
 # Function 1
 # The fno:function abstracts away the age majority verification logic.
