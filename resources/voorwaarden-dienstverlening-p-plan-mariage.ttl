@@ -87,7 +87,6 @@ _:state1 a step:State ;
 #     sh:property [
 #         sh:path persoon:datum ;
 #         sh:datatype xsd:datetime ;
-#         sh:node persoon:BurgelijkeStaatTypeShape ;
 #         sh:minCount 1 
 #     ] .
 _:shape1 a sh:NodeShape .
@@ -201,7 +200,6 @@ _:state4 a step:State ;
 _:shape4 a sh:NodeShape .
 
 # 3. Execution of the procedure.
-
 _:case a dbpedia:Case .
     dossier:doorloopt (_:activity1 _:activity2 _:activity3)
 
