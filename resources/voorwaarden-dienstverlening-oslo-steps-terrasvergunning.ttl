@@ -1,0 +1,239 @@
+@prefix cpsv: <http://purl.org/vocab/cpsv#> .
+@prefix dbpedia: <http://dbpedia.org/ontology#> .
+@prefix dc: <http://purl.org/dc/terms#> .
+@prefix dcat: <http://www.w3.org/ns/dcat#> .
+@prefix dossier: <https://data.vlaanderen.be/ns/dossier#> .
+@prefix eli: <http://data.europa.eu/eli/ontology#>
+@prefix eu: <https://data.europa.eu/m8g#> .
+@prefix example: <https://example.org/ns#> .
+@prefix foaf: <http://xmlns.com/foaf/0.1#> .
+@prefix p-plan: <http://purl.org/net/p-plan#> .	
+@prefix persoon: <https://data.vlaanderen.be/ns/persoon#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix sd: <https://www.w3.org/TR/sparql12-service-description/#lang-sparql12query> .
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix skos: 	<http://www.w3.org/2004/02/skos/core#> .
+@prefix step: <https://fast.ilabt.imec.be/ns/oslo-steps#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+# This example builds upon the CCCEV, OSLO-STEPS and p-plan vocabularies.
+# In order to reduce complexity, this example does not concern itself with the reasoning at each step / activity. 
+# This is outside the model, but at each step the activity output is added to the knowledge graph.
+
+# 1. Legal backing.
+_:publicService a cpsv:PublicService ;
+    example:instantiates _:mariage ;
+
+_:legalResource a eli:LegalResource .
+
+# 2. Definition of the procedure.
+_:mariageDeclaration a step:Plan ;
+    dc:description "Mariage declaration" ;
+    p-plan:isSubPlanOfPlan _:mariage .
+
+# 2.1. Age requirement
+
+_:hasRequiredAgeToMarryStep a p-plan:MultiStep ;
+    dc:description "Establish that registered person is sufficiently old to marry" ;
+    p-plan:isStepOfPlan _:mariageDeclaration ;
+    p-plan:isDecomposedAsPlan _:hasRequiredAgeToMarryPlan ;
+    example:holdsRequirement _:hasRequiredAgeToMarryRequirement ;
+    step:requiresState _:state1 .
+
+_:hasRequiredAgeToMarryPlan a step:Plan ;
+    p-plan:isSubPlanOfPlan _:mariageDeclaration .
+
+_:hasRequiredAgeToMarryRequirement eu:Requirement ;
+    eu:isDerivedFrom _:legalResource ;
+    eu:hasSupportingEvidence (_:courtDecision _:recordNationalRegister) .
+
+_:ageAbove18Step a p-plan:MultiStep ;
+    p-plan:isStepOfPlan _:hasRequiredAgeToMarryPlan ;
+    p-plan:isDecomposedAsPlan _:ageAbove18Plan ;
+    step:requiresState _:state1 .
+
+_:personMustNotBeAbove18 a step:Step ;
+    p-plan:isPrecededBy _:ageAbove18Step .
+
+_:ageAbove18Plan a step:Plan ;
+    dc:description "Establish that registered person is above 18 of age" ;
+    p-plan:isSubPlanOfPlan _:hasRequiredAgeToMarry .
+
+_:recordNationalRegister a eu:Evidence ;
+    dc:description "Individual record in national register";
+    dcat:distribution _:recordNationalRegisterDistribution .
+
+_:recordNationalRegisterDistribution a dcat:Distribution ;
+    dc:conformsTo persoon:GeregistreerdPersoon .
+
+_:obtainAge a step:Step ;
+    dc:description "Obtain the age of citizen based on the date of birth" ;
+    p-plan:isStepOfPlan _:ageAbove18 ;
+    step:requiresState _:state1 .
+
+_:state1 a step:State ;
+    step:hasStateShape _:shape1 .
+
+# @prefix persoon: <https://data.vlaanderen.be/ns/persoon#> .
+# @prefix sh: <http://www.w3.org/ns/shacl#> .
+
+# persoon:GeregistreerdPersoon
+#     a sh:NodeShape ;
+#     sh:targetClass persoon:GeregistreerdPersoon .
+
+# persoon:Geboorte
+#     a sh:NodeShape ;
+#     sh:targetClass persoon:Geboorte ;
+#     sh:property [
+#         sh:path persoon:datum ;
+#         sh:datatype xsd:datetime ;
+#         sh:minCount 1 
+#     ] .
+_:shape1 a sh:NodeShape .
+
+_:isAgeAbove18 a step:Step ;
+    dc:description "Verify that the registered person's age is above 18" ;
+    p-plan:isStepOfPlan _:ageAbove18 ;
+    p-plan:isPrecededBy _:obtainAge ;
+    step:requiresState _:state2 .
+
+_:state2 a step:State ;
+    step:hasStateShape _:shape2 .
+
+# @prefix persoon: <https://data.vlaanderen.be/ns/persoon#> .
+# @prefix sh: <http://www.w3.org/ns/shacl#> .
+# @prefix example: <http://example.org/ns#> .
+
+# persoon:GeregistreerdPersoon
+#     a sh:NodeShape ;
+#     sh:targetNode persoon:GeregistreerdPersoon ;
+#     sh:property [
+#         sh:path example:age ;
+#         sh:datatype xsd:integer ;
+#         sh:minCount 1 
+#     ] .
+_:shape2 a sh:NodeShape .
+
+ _:courtDecision a eu:Evidence ;
+    dc:description "Court decision re article 145 Civil Code";
+    dc:isAbout _:subject ;
+    eu:supportsConcept _:personIsDeclaredMajor .
+
+_:personMustNotBeAbove18 a step:Step ;
+    dc:description "Verify whether the family court declared the person major" ;
+    p-plan:isStepOfPlan _:hasRequiredAgeToMarry ;
+    p-plan:isPrecededBy _:ageAbove18 ;
+    step:requiresState _:state3 .
+
+_:state3 a step:State ;
+    step:hasStateShape _:shape3 .
+
+# @prefix example: <https://example.org/ns#> .
+# @prefix person: <http://www.w3.org/ns/person#> .
+# @prefix persoon: <https://data.vlaanderen.be/ns/persoon#> .
+# @prefix sh: <http://www.w3.org/ns/shacl#> .
+# @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+# persoon:GeregistreerdPersoon
+#     a sh:NodeShape ;
+#     sh:targetNode persoon:GeregistreerdPersoon ;
+#     sh:property [
+#         sh:path example:age ;
+#         sh:datatype xsd:integer ;
+#         sh:maxExclusive 18 ;
+#     ] ;
+#     sh:property [
+#        sh:path example:isDeclaredMajor ;
+#        sh:datatype xsd:boolean ;
+#     ] .
+_:shape3 a sh:NodeShape .
+
+# 2.2. Bachelor requirement
+_:recordPopulationRegister a eu:Evidence ;
+    dcat:type "Extract of the population registry";
+    dc:isAbout _:subject ;
+    dcat:distribution _:recordPopulationRegisterDistribution .
+
+_:recordPopulationRegisterDistribution a dcat:Distribution ;
+    dc:conformsTo persoon:GeregistreerdPersoon .
+
+_:maritalStatusIsSingleStep a step:Step ;
+    dc:description "Verify whether the marital status is single" ;
+    p-plan:isStepOfPlan _:mariageDeclaration ;
+    step:requiresState _:state4 .
+
+_:maritalStatusIsSingleRequirement a eu:Requirement ;
+    eu:hasSupportingEvidence _:recordPopulationRegister .
+
+_:state4 a step:State ;
+    step:hasStateShape _:shape4 .
+
+# @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+# @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+# @prefix sh: <http://www.w3.org/ns/shacl#> .
+# @prefix persoon: <http://example.org/persoon#> .
+# @prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+
+# persoon:GeregistreerdPersoonShape
+#     a sh:NodeShape ;
+#     sh:targetClass persoon:GeregistreerdPersoon ;
+#     sh:property [
+#         sh:path persoon:heeftBurgelijkeStaat ;
+#         sh:node persoon:BurgelijkeStaatShape ;
+#     ] .
+
+# persoon:BurgelijkeStaatShape
+#     a sh:NodeShape ;
+#     sh:targetClass persoon:BurgelijkeStaat ;
+#     sh:property [
+#         sh:path persoon:type ;
+#         sh:node persoon:BurgelijkeStaatTypeShape ;
+#     ] .
+
+# persoon:BurgelijkeStaatTypeShape
+#     a sh:NodeShape ;
+#     sh:targetClass skos:Concept ;
+#     sh:property [
+#         sh:path skos:preLabel ;
+#         sh:minCount 1 ;
+#     ] .
+_:shape4 a sh:NodeShape .
+
+# 3. Execution of the procedure.
+_:case a dbpedia:Case .
+    dossier:doorloopt (_:activity1 _:activity2 _:activity3)
+
+_:entity1 a persoon:GeregistreerdPersoon, dossier:Stuk ;
+    p-plan:correspondsToVariable _:shape1 ;
+    persoon:heeftGeboorte _:dob .
+
+_:dob a persoon:Geboorte ;
+    persoon:datum "1990-11-08T00:00:00"^^xsd:dateTime .
+
+# Multistep are not scheduled for execution
+_:activity1 a p-plan:Activity ;
+    p-plan:correspondsToStep _:obtainAge ;
+    prov:used _:entity1 .
+
+_:activity2 a p-plan:Activity ;
+    p-plan:correspondsToStep _:isAgeAbove18 ;
+    prov:wasInformedBy _:activity1 .
+
+# _:entity2 a persoon:GeregistreerdPersoon, dossier:Stuk ;
+#     p-plan:correspondsToVariable _:shape2 ;
+#     example:age "32"^^xsd:integer .
+
+_:activity3 a p-plan:Activity ;
+    p-plan:correspondsToStep _:maritalStatusIsSingle ;
+    prov:used _:entity3 .
+
+_:entity3 a persoon:GeregistreerdPersoon, dossier:Stuk ;
+    p-plan:correspondsToVariable _:shape4 ;
+    persoon:heeftBurgerlijkeStaat _:maritalStatus .
+
+_:maritalStatus a persoon:BurgelijkeStaat ;
+    persoon:type _:maritalStatusType .
+
+_:maritalStatusType a skos:Concept ;
+    skos:preLabel "Ongehuwd" .
+
