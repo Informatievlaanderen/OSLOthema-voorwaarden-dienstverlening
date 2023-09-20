@@ -1,0 +1,202 @@
+@prefix cpsv: <http://purl.org/vocab/cpsv#> .
+@prefix dbpedia: <http://dbpedia.org/ontology#> .
+@prefix dc: <http://purl.org/dc/terms#> .
+@prefix dcat: <http://www.w3.org/ns/dcat#> .
+@prefix dossier: <https://data.vlaanderen.be/ns/dossier#> .
+@prefix eli: <http://data.europa.eu/eli/ontology#>
+@prefix eu: <https://data.europa.eu/m8g#> .
+@prefix example: <https://example.org/ns#> .
+@prefix foaf: <http://xmlns.com/foaf/0.1#> .
+@prefix p-plan: <http://purl.org/net/p-plan#> .	
+@prefix persoon: <https://data.vlaanderen.be/ns/persoon#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix sd: <https://www.w3.org/TR/sparql12-service-description/#lang-sparql12query> .
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix skos: 	<http://www.w3.org/2004/02/skos/core#> .
+@prefix step: <https://fast.ilabt.imec.be/ns/oslo-steps#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+# 1. Legal backing.
+_:publicService a cpsv:PublicService ;
+    example:instantiates _:horecaVergunningPlan ;
+
+_:legalResource a eli:LegalResource .
+
+# 2. Definition of the procedure.
+_:horecaVergunningStep a p-plan:MultiStep ;
+    dc:description "Horeca vergunning" .
+    p-plan:isDecomposedAsPlan _:horecaVergunningPlan .
+
+_:horecaVergunningPlan a step:Plan .
+    
+# Voorwerp aanvraag
+# Pand waarvoor de aanvraag is ingediend
+_:horecaAanvraag a step:Step ;
+    dc:description "Identificatie pand waar activiteit uitgevoerd zal worden" ;
+    p-plan:isStepOfPlan _:horecaVergunningPlan ;
+    example:holdsRequirement _:horecaAanvraagRequirement ;
+    step:requiresState _:state
+
+_:horecaAanvraagRequirement a eu:InformationRequirement .
+
+_:state1 a step:State ;
+    step:hasStateShape _:shape1 .
+
+# @prefix adres: <https://data.vlaanderen.be/ns/adres#> .
+# @prefix sh: <http://www.w3.org/ns/shacl#> .
+
+# adres:AdresShape
+#   a step:StateShape ;
+#   sh:targetClass adres:Adres .
+_:shape1 a step:StateShape .
+
+# KBO
+_:registratieKBOStep a p-plan:MultiStep ;
+    dc:description "Verificatie registratie in KBO" ;
+    p-plan:isStepOfPlan _:horecaVergunningPlan ;
+    p-plan:isDecomposedAsPlan _:registratieKBOPlan ;
+
+_:registratieKBOPlan a step:Plan ;
+    p-plan:isSubPlanOfPlan _:horecaVergunningPlan .
+
+# KBO - Onderneming
+_:ondernemingKBO a p-plan:Step ;
+    dc:description "Verificatie toekenning ondernemingsnummer en status" ;
+    p-plan:isStepOfPlan _:registratieKBOPlan ;
+    example:holdsRequirement _:ondernemingKBORequirement ;
+    step:requiresState _:state2 .
+
+_:state2 a step:State ;
+    step:hasStateShape _:shape2 .
+
+# @prefix organisatie: <https://data.vlaanderen.be/ns/organisatie#> .
+# @prefix rov: <http://www.w3.org/ns/regorg#> .
+# @prefix sh: <http://www.w3.org/ns/shacl#> .
+
+# rov:RegisteredOrganization
+#     a step:StateShape ;
+#     sh:targetClass rov:RegisteredOrganization .
+_:shape2 a step:StateShape .
+
+_:ondernemingKBORequirement a eu:Constraint ;
+    eu:isDerivedFrom _:legalResource ;
+    eu:hasSupportingEvidence _:recordKBO .
+
+_:recordKBO a eu:Evidence ;
+    dc:isAbout _:subject ;
+    dcat:distribution _:recordKBODistribution .
+
+_:recordKBODistribution a dcat:Distribution ;
+    dc:conformsTo rov:RegisteredOrganization .
+
+# KBO - Vestiging
+_:vestigingKBO a p-plan:Step ;
+    dc:description "Verificatie vestiging" ;
+    p-plan:isPrecededBy _:ondernemingKBO ;
+    example:holdsRequirement _:vestigingKBORequirement ;
+    step:requiresState _:state3 .
+
+_:state3 a step:State ;
+    step:hasStateShape _:shape3 .
+
+# @prefix organisatie: <https://data.vlaanderen.be/ns/organisatie#> .
+# @prefix rov: <http://www.w3.org/ns/regorg#> .
+# @prefix sh: <http://www.w3.org/ns/shacl#> .
+
+# rov:RegisteredOrganization
+#     a step:StateShape ;
+#     sh:targetClass rov:RegisteredOrganization .
+#     sh:property [
+#         sh:path rov:registration ;
+#         sh:class adms:Identifier ;
+#     ] ;
+#     sh:property [
+#         sh:path organisatie:rechtstoestand ;
+#         sh:class skos:Concept ;
+#     ] .
+_:shape3 a step:StateShape .
+
+_:vestigingKBORequirement a eu:Constraint ;
+    eu:isDerivedFrom _:legalResource ;
+    eu:hasSupportingEvidence _:recordKBO .
+
+# Match tussen pand aanvraag en vestiging
+_:matchPand a p-plan:Step ;
+    dc:description "Verificatie dat pand waar activiteit uitgevoerd zal worden overeenkomt met geregistreerde vestiging" ;
+    p-plan:isPrecededBy _:vestigingKBO ;
+    example:holdsRequirement _:matchPandRequirement ;
+    step:requiresState _:state4 .
+
+_:state4 a step:State ;
+    step:hasStateShape _:shape4 .
+
+# @prefix sh: <http://www.w3.org/ns/shacl#> .
+# @prefix adms: <http://www.w3.org/ns/adms#> .
+# @prefix adres: <https://data.vlaanderen.be/ns/adres#> .
+# @prefix org: <http://www.w3.org/ns/org#> .
+# @prefix organisatie: <https://data.vlaanderen.be/ns/organisatie#> .
+# @prefix rov: <http://www.w3.org/ns/regorg#> .
+# @prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+
+# # SHACL shape for RegisteredOrganization
+# rov:RegisteredOrganizationShape
+#     a sh:NodeShape ;
+#     sh:targetClass rov:RegisteredOrganization ;
+#     sh:property [
+#         sh:path rov:registration ;
+#         sh:class adms:Identifier ;
+#     ] ;
+#     sh:property [
+#         sh:path organisatie:rechtstoestand ;
+#         sh:class skos:Concept ;
+#     ] ;
+#     sh:property [
+#         sh:path org:hasRegisteredSite ;
+#         sh:class org:Site ;
+#     ] .
+#
+# # SHACL shape for Site
+# org:SiteShape
+#     a sh:NodeShape ;
+#     sh:targetClass org:Site ;
+#     sh:property [
+#         sh:path organisatie:bestaatUit ;
+#         sh:class adres:Adres ;
+#     ] .
+#
+# # SHACL shape for Adres
+# adres:AdresShape
+#   a step:StateShape ;
+#   sh:targetClass adres:Adres .
+_:shape4 a step:StateShape ;    
+
+# FAVV
+_:aangifteFAVV a p-plan:Step ;
+    dc:description "Verificatie aangifteplicht van het exploiteren van een horecazaak bij het Federaal Agentschap voor de Veiligheid van de Voedselketen" ;
+    p-plan:isStepOfPlan _:horecaVergunningPlan ;
+    example:holdsRequirement _:aangifteFAVVRequirement ;
+    step:requiresState _:state2 .
+
+_:state2 a step:State ;
+    step:hasStateShape _:shape2 .
+
+# @prefix organisatie: <https://data.vlaanderen.be/ns/organisatie#> .
+# @prefix rov: <http://www.w3.org/ns/regorg#> .
+# @prefix sh: <http://www.w3.org/ns/shacl#> .
+
+# rov:RegisteredOrganization
+#     a step:StateShape ;
+#     sh:targetClass rov:RegisteredOrganization .
+_:shape2 a step:StateShape .
+
+_:aangifteFAVVRequirement a eu:Requirement ;
+    eu:isDerivedFrom _:legalResource ;
+    eu:hasSupportingEvidence _:aangifteFAVVEvidence .
+
+_:aangifteFAVVEvidence a eu:Evidence ;
+    dc:isAbout _:subject ;
+    dcat:distribution _:aangifteFAVVDistribution .
+
+_:aangifteFAVVDistribution a dcat:Distribution ;
+    dc:conformsTo rov:RegisteredOrganization .
+

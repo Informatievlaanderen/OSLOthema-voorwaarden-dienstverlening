@@ -43,7 +43,7 @@ _:hasRequiredAgeToMarryStep a p-plan:MultiStep ;
 _:hasRequiredAgeToMarryPlan a step:Plan ;
     p-plan:isSubPlanOfPlan _:mariageDeclaration .
 
-_:hasRequiredAgeToMarryRequirement eu:Requirement ;
+_:hasRequiredAgeToMarryRequirement a eu:Requirement ;
     eu:isDerivedFrom _:legalResource ;
     eu:hasSupportingEvidence (_:courtDecision _:recordNationalRegister) .
 
@@ -78,18 +78,18 @@ _:state1 a step:State ;
 # @prefix sh: <http://www.w3.org/ns/shacl#> .
 
 # persoon:GeregistreerdPersoon
-#     a sh:NodeShape ;
+#     a step:StateShape ;
 #     sh:targetClass persoon:GeregistreerdPersoon .
 
 # persoon:Geboorte
-#     a sh:NodeShape ;
+#     a step:StateShape ;
 #     sh:targetClass persoon:Geboorte ;
 #     sh:property [
 #         sh:path persoon:datum ;
 #         sh:datatype xsd:datetime ;
 #         sh:minCount 1 
 #     ] .
-_:shape1 a sh:NodeShape .
+_:shape1 a step:StateShape .
 
 _:isAgeAbove18 a step:Step ;
     dc:description "Verify that the registered person's age is above 18" ;
@@ -105,19 +105,18 @@ _:state2 a step:State ;
 # @prefix example: <http://example.org/ns#> .
 
 # persoon:GeregistreerdPersoon
-#     a sh:NodeShape ;
+#     a step:StateShape ;
 #     sh:targetNode persoon:GeregistreerdPersoon ;
 #     sh:property [
 #         sh:path example:age ;
 #         sh:datatype xsd:integer ;
 #         sh:minCount 1 
 #     ] .
-_:shape2 a sh:NodeShape .
+_:shape2 a step:StateShape .
 
  _:courtDecision a eu:Evidence ;
     dc:description "Court decision re article 145 Civil Code";
-    dc:isAbout _:subject ;
-    eu:supportsConcept _:personIsDeclaredMajor .
+    dc:isAbout _:agent .
 
 _:personMustNotBeAbove18 a step:Step ;
     dc:description "Verify whether the family court declared the person major" ;
@@ -135,7 +134,7 @@ _:state3 a step:State ;
 # @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
 # persoon:GeregistreerdPersoon
-#     a sh:NodeShape ;
+#     a step:StateShape ;
 #     sh:targetNode persoon:GeregistreerdPersoon ;
 #     sh:property [
 #         sh:path example:age ;
@@ -146,12 +145,12 @@ _:state3 a step:State ;
 #        sh:path example:isDeclaredMajor ;
 #        sh:datatype xsd:boolean ;
 #     ] .
-_:shape3 a sh:NodeShape .
+_:shape3 a step:StateShape .
 
 # 2.2. Bachelor requirement
 _:recordPopulationRegister a eu:Evidence ;
     dcat:type "Extract of the population registry";
-    dc:isAbout _:subject ;
+    dc:isAbout _:agent ;
     dcat:distribution _:recordPopulationRegisterDistribution .
 
 _:recordPopulationRegisterDistribution a dcat:Distribution ;
@@ -175,7 +174,7 @@ _:state4 a step:State ;
 # @prefix skos: <http://www.w3.org/2004/02/skos/core#> .
 
 # persoon:GeregistreerdPersoonShape
-#     a sh:NodeShape ;
+#     a step:StateShape ;
 #     sh:targetClass persoon:GeregistreerdPersoon ;
 #     sh:property [
 #         sh:path persoon:heeftBurgelijkeStaat ;
@@ -183,7 +182,7 @@ _:state4 a step:State ;
 #     ] .
 
 # persoon:BurgelijkeStaatShape
-#     a sh:NodeShape ;
+#     a step:StateShape ;
 #     sh:targetClass persoon:BurgelijkeStaat ;
 #     sh:property [
 #         sh:path persoon:type ;
@@ -191,13 +190,13 @@ _:state4 a step:State ;
 #     ] .
 
 # persoon:BurgelijkeStaatTypeShape
-#     a sh:NodeShape ;
+#     a step:StateShape ;
 #     sh:targetClass skos:Concept ;
 #     sh:property [
 #         sh:path skos:preLabel ;
 #         sh:minCount 1 ;
 #     ] .
-_:shape4 a sh:NodeShape .
+_:shape4 a step:StateShape .
 
 # 3. Execution of the procedure.
 _:case a dbpedia:Case .
