@@ -60,6 +60,7 @@ _:shape1 a step:StateShape .
     
 # Verificatie dat omgevingsvergunning niet vereist is
 _:omgevingVergunningNietVereist a step:Step ;
+    p-plan:isPrecededBy _:terrasAanvraag
     step:requiresState _:state2 .
 
 _:state2 a step:State ;

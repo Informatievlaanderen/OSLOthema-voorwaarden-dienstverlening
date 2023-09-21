@@ -123,7 +123,7 @@ _:vestigingKBORequirement a eu:Constraint ;
 # Match tussen pand aanvraag en vestiging
 _:matchPand a p-plan:Step ;
     dc:description "Verificatie dat pand waar activiteit uitgevoerd zal worden overeenkomt met geregistreerde vestiging" ;
-    p-plan:isPrecededBy _:vestigingKBO ;
+    p-plan:isPrecededBy _:registratieKBOStep ;
     example:holdsRequirement _:matchPandRequirement ;
     step:requiresState _:state4 .
 
