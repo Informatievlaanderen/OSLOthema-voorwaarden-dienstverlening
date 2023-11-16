@@ -1,0 +1,12 @@
+{
+    "@context": {
+    "persoon": "https://data.vlaanderen.be/ns/persoon#",
+    "xsd": "http://www.w3.org/2001/XMLSchema#"
+    },
+    "@id": "_:dob",
+    "@type": "persoon:Geboorte",
+    "persoon:datum": {
+        "@value": "1990-11-08T00:00:00",
+        "@type": "xsd:dateTime"
+    }
+}

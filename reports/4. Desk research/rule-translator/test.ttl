@@ -1,0 +1,26 @@
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix cv: <http://data.europa.eu/m8g/> .
+@prefix cpsv: <http://purl.org/vocab/cpsv#> .
+@prefix cccev: <http://data.europa.eu/m8g/cccev#> .
+@prefix cl-evt: <https://example.com/concept/expectedValueType/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+cv:Requirement a cv:Requirement ;
+    cpsv:holdsRequirement cpsv:PublicService .
+
+cpsv:PublicService a cpsv:PublicService ;
+    dcterms:title "Seniorenbiljet" ;
+    cpsv:hasCompetentAuthority [
+        a cv:PublicOrganisation ;
+        skos:prefLabel "NMBS"
+    ] ;
+    dcterms:title "Leeftijdsvereiste" ;
+    cccev:hasConcept [
+        a cccev:InformationConcept ;
+        skos:prefLabel "Leeftijd" ;
+        cccev:expressionOfExpectedValue [
+            a xsd:restriction ;
+            xsd:minInclusive 18
+        ]
+    ] .

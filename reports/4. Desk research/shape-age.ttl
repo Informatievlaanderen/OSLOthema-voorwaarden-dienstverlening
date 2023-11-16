@@ -1,0 +1,12 @@
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix person: <http://www.w3.org/ns/person#> .
+@prefix persoon: <https://data.vlaanderen.be/ns/persoon#> .
+
+person:Person
+    a sh:NodeShape ;
+    sh:targetNode _:age ;
+    sh:property [
+        sh:path xsd:integer ;
+        sh:minInclusive 18 ;
+    ] .

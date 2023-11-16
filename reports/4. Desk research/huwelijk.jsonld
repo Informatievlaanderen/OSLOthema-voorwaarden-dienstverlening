@@ -1,0 +1,131 @@
+{
+    "@context": "",
+    "@graph": [
+        {
+            "@id": "_:pud001",
+            "@type": "PubliekeDienstverlening",
+            "PubliekeDienstverlening.identificatie": {
+                "@value": "139",
+                "@type": "https://example.com/concept/identificatortype/ipdc-fichenummer"
+            },
+            "PubliekeDienstverlening.naam": {
+                "@value": "Huwelijk",
+                "@language": "nl"
+            },
+            "PubliekeDienstverlening.beschrijving": {
+                "@value": "Het huwelijk is een verbintenis tussen twee mensen, voltrokken door een ambtenaar van de burgerlijke stand. Het huwelijk vindt plaats in het gemeentehuis, maar kan eventueel ook op een andere openbare plaats met neutraal karakter, als de gemeenteraad zo'n plaats heeft aangewezen.",
+                "@language": "nl"
+            },
+            "PubliekeDienstverlening.heeftVoorwaarde": [
+                "_:vrw001",
+                ""
+            ],
+            "PubliekeDienstverlening.volgt": [
+                {
+                    "@type": "Procedure",
+                    "Procedure.identificator": "",
+                    "Procedure.naam": {
+                        "@value": "Huwelijksaangifte",
+                        "@language": "nl"
+                    },
+                    "Procedure.beschrijving": {
+                        "@value": "Wie wil trouwen, moet daar minstens veertien dagen voor de geplande huwelijksdatum aangifte van doen bij de ambtenaar van de burgerlijke stand. De aangifte gebeurt in de gemeente waar een van de aanstaande echtgenoten woont of ingeschreven is in het bevolkings-, vreemdelingen-of wachtregister.",
+                        "@language": "nl"
+                    }
+                },
+                {
+                    "@type": "Procedure",
+                    "Procedure.identificator": "",
+                    "Procedure.naam": {
+                        "@value": "Huwelijksvoltrekking",
+                        "@language": "nl"
+                    },
+                    "Procedure.beschrijving": {
+                        "@value": "De huwelijksvoltrekking vindt plaats in de gemeente waar de aangifte is gebeurd, ten vroegste veertien dagen en ten laatste zes maanden na die aangifte.",
+                        "@language": "nl"
+                    }
+                }
+            ]
+        },
+        {
+            "@id": "_:vrw001",
+            "@type": "Voorwaarde",
+            "Voorwaarde.beschrijving": {
+                "@value": "De minimumleeftijd om te trouwen, is 18 jaar. De jeugdrechtbank kan die leeftijdsbeperking opheffen als daar goede redenen voor zijn.",
+                "@language": "nl"
+            },
+            "Voorwaarde.publiekeDienstverlening": "_:pud001",
+            "Voorwaarde.type": "https://example.com/concept/voorwaardetype/minimumleeftijd",
+            "VoorwaardeHeeftConcept": [
+                "_:inc001"
+            ],
+            "Voorwaarde.bewijstypelijst": [
+                "_:btl001",
+                "_:btl002",
+                "_:btl003",
+                "_:btl004",
+                ""
+            ]
+        },
+        {},
+        {
+            "@id": "_:inc001",
+            "@type": "Informatieconcept",
+            "Informatieconcept.type": "https://example.com/concept/informatieconcepttype/minimumleeftijd",
+            "Informatieconcept.uitdrukkingVerwachteWaarde": {
+                "@value": "18",
+                "@type": "xml-schema:integer"
+            }
+        },
+        {},
+        {
+            "@id": "_:btl001",
+            "@type": "Bewijstypelijst",
+            "Bewijstypelijst.bewijstype": [
+                "_:bwt001"
+            ]
+        },
+        {
+            "@id": "_:btl002",
+            "@type": "Bewijstypelijst",
+            "Bewijstypelijst.bewijstype": [
+                "_:bwt002"
+            ]
+        },
+        {
+            "@id": "_:btl003",
+            "@type": "Bewijstypelijst",
+            "Bewijstypelijst.bewijstype": [
+                "_:bwt003"
+            ]
+        },
+        {
+            "@id": "_:btl004",
+            "@type": "Bewijstypelijst",
+            "Bewijstypelijst.bewijstype": [
+                "_:bwt004"
+            ]
+        },
+        {},
+        {
+            "@id": "_:bwt001",
+            "@type": "Bewijstype",
+            "Bewijstype.bewijstypeclassificatie": "https://example.com/concept/bewijstypeclassificatie/identiteitsbewijs/BelgischeIdentiteitskaart"
+        },
+        {
+            "@id": "_:bwt002",
+            "@type": "Bewijstype",
+            "Bewijstype.bewijstypeclassificatie": "https://example.com/concept/bewijstypeclassificatie/identiteitsbewijs/BelgischPaspoort"
+        },
+        {
+            "@id": "_:bwt003",
+            "@type": "Bewijstype",
+            "Bewijstype.bewijstypeclassificatie": "https://example.com/concept/bewijstypeclassificatie/identiteitsbewijs/KopieVanBelgischeIdentiteitskaartOfPaspoort"
+        },
+        {
+            "@id": "_:bwt004",
+            "@type": "Bewijstype",
+            "Bewijstype.bewijstypeclassificatie": "https://example.com/concept/bewijstypeclassificatie/identiteitsbewijs/ElektronischeVreemdelingenkaart"
+        }
+    ]
+}

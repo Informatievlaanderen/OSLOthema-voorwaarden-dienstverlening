@@ -1,0 +1,63 @@
+{
+    "@context": "",
+    "@graph": [
+        {
+            "@id": "_:prs001",
+            "@type": "GeregistreerdPersoon",
+            "Persoon.voornaam": [
+                "Geert"
+            ],
+            "Persoon.achternaam": "Thijs",
+            "GeregistreerdPersoon.registratie": {
+                "@type": "Identificator",
+                "Identificator.identificator": {
+                    "@value": "",
+                    "@type": "https://example.com/concept/identificatortype/rijksregisternummer"
+                }
+            },
+            "Agent.voldoetAan": "_:vrw001"
+        },
+        {
+            "@id": "_:vrw001",
+            "@type": "Voorwaarde",
+            "Voorwaarde.beschrijving": {
+                "@value": "De minimumleeftijd om te trouwen, is 18 jaar. De jeugdrechtbank kan die leeftijdsbeperking opheffen als daar goede redenen voor zijn.",
+                "@language": "nl"
+            },
+            "Voorwaarde.publiekeDienstverlening": "_:pud001",
+            "Voorwaarde.type": "https://example.com/concept/voorwaardetype/minimumleeftijd",
+            "VoorwaardeHeeftConcept": [
+                "_:inc001"
+            ]
+        },
+        {
+            "@id": "_:pud001",
+            "@type": "PubliekeDienstverlening",
+            "PubliekeDienstverlening.identificatie": {
+                "@value": "139",
+                "@type": "https://example.com/concept/identificatortype/ipdc-fichenummer"
+            },
+            "PubliekeDienstverlening.naam": {
+                "@value": "Huwelijk",
+                "@language": "nl"
+            },
+            "PubliekeDienstverlening.beschrijving": {
+                "@value": "Het huwelijk is een verbintenis tussen twee mensen, voltrokken door een ambtenaar van de burgerlijke stand. Het huwelijk vindt plaats in het gemeentehuis, maar kan eventueel ook op een andere openbare plaats met neutraal karakter, als de gemeenteraad zo'n plaats heeft aangewezen.",
+                "@language": "nl"
+            },
+            "PubliekeDienstverlening.heeftVoorwaarde": [
+                "_:vrw001",
+                ""
+            ]
+        },
+        {
+            "@id": "_:inc001",
+            "@type": "Informatieconcept",
+            "Informatieconcept.type": "https://example.com/concept/informatieconcepttype/minimumleeftijd",
+            "Informatieconcept.uitdrukkingVerwachteWaarde": {
+                "@value": "18",
+                "@type": "xml-schema:integer"
+            }
+        }
+    ]
+}

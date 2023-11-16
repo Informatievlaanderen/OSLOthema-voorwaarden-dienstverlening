@@ -1,0 +1,41 @@
+<rdf:RDF xmlns="http://example.org/ontology#"
+         xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+         xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+         xmlns:swrl="http://www.w3.org/2003/11/swrl#"
+         xmlns:swrlb="http://www.w3.org/2003/11/swrlb#"
+         xmlns:xsd="http://www.w3.org/2001/XMLSchema#">
+
+    <!-- Individuals -->
+    <Person rdf:about="#John">
+        <age rdf:datatype="xsd:int">25</age>
+    </Person>
+
+    <!-- Ontology Definition -->
+    <owl:Ontology rdf:about="">
+        <!-- SWRL Rule Definition -->
+        <swrl:Imp rdf:about="#YoungAdultRule">
+            <swrl:body>
+                <swrl:ClassAtom>
+                    <swrl:argument1 rdf:resource="#John"/>
+                    <swrl:classPredicate rdf:resource="#Person"/>
+                </swrl:ClassAtom>
+                <swrl:DatavaluedPropertyAtom>
+                    <swrl:argument1 rdf:resource="#John"/>
+                    <swrl:propertyPredicate rdf:resource="#age"/>
+                    <swrl:argument2 rdf:datatype="xsd:int">18</swrl:argument2>
+                </swrl:DatavaluedPropertyAtom>
+                <swrl:DatavaluedPropertyAtom>
+                    <swrl:argument1 rdf:resource="#John"/>
+                    <swrl:propertyPredicate rdf:resource="#age"/>
+                    <swrl:argument2 rdf:datatype="xsd:int">30</swrl:argument2>
+                </swrl:DatavaluedPropertyAtom>
+            </swrl:body>
+            <swrl:head>
+                <swrl:ClassAtom>
+                    <swrl:argument1 rdf:resource="#John"/>
+                    <swrl:classPredicate rdf:resource="#YoungAdult"/>
+                </swrl:ClassAtom>
+            </swrl:head>
+        </swrl:Imp>
+    </owl:Ontology>
+</rdf:RDF>
