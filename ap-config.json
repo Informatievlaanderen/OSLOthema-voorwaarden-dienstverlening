@@ -19,6 +19,10 @@
         {
             "naam": "Charter",
             "waarde": "Charter OSLO Voorwaarden Dienstverlening.docx.pdf"
+        },
+        {
+            "naam": "Documenten desk research",
+            "waarde": "4. Desk research.zip"
         }
     ],
     "verslagen": [
@@ -41,10 +45,6 @@
         {
             "naam": "Verslag thematische werkgroep 4 - 13 oktober 2023",
             "waarde": "Verslag OSLO voorwaarden dienstverlening - thematische werkgroep 4.pdf"
-        },
-        {
-            "naam": "Documenten desk research",
-            "waarde": "4. Desk research.zip"
         }
     ],
     "presentaties": [
