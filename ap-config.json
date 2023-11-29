@@ -32,7 +32,19 @@
         },
         {
             "naam": "Verslag thematische werkgroep 2 - 15 juni 2023",
-            "waarde": "Verslag OSLO voorwaarden dienstverlening - thematische werkgroep 2"
+            "waarde": "Verslag OSLO voorwaarden dienstverlening - thematische werkgroep 2.pdf"
+        },
+        {
+            "naam": "Verslag thematische werkgroep 3 - 27 juli 2023",
+            "waarde": "Verslag OSLO voorwaarden dienstverlening - thematische werkgroep 3.pdf"
+        },
+        {
+            "naam": "Verslag thematische werkgroep 4 - 13 oktober 2023",
+            "waarde": "Verslag OSLO voorwaarden dienstverlening - thematische werkgroep 4.pdf"
+        },
+        {
+            "naam": "Documenten desk research",
+            "waarde": "4. Desk research.zip"
         }
     ],
     "presentaties": [
@@ -47,6 +59,14 @@
         {
             "naam": "Presentatie thematische werkgroep 2 - 15 juni 2023",
             "waarde": "Presentatie tweede thematische werkgroep - Voorwaarden Dienstverlening- 15 juni 2023.pdf"
+        },
+        {
+            "naam": "Presentatie thematische werkgroep 3 - 27 juli 2023",
+            "waarde": "Presentatie derde thematische werkgroep - Voorwaarden Dienstverlening- 27 juli 2023.pptx (1).pdf"
+        },
+        {
+            "naam": "Presentatie thematische werkgroep 4 - 13 oktober 2023",
+            "waarde": "Presentatie vierde thematische werkgroep - Voorwaarden Dienstverlening-13oktober  2023.pdf"
         }
     ],
     "functioneel_toepassingsgebied": "Semantische standaard voor informatie over Voorwaarden Dienstverlening",
