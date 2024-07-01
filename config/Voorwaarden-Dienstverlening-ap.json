@@ -2,7 +2,7 @@
 {
   "name": "OSLO-voorwaardendienstverlening-ap",
   "type": "ap",
-  "eap": "OSLO Voorwaarden Dienstverlening.eap",
+  "eap": "OSLO_Voorwaarden_Dienstverlening.eap",
   "diagram": "Voorwaarden-Dienstverlening-AP",
   "template": "voorwaarden-dienstverlening-ap.j2",
   "title": "OSLO Voorwaarden Dienstverlening (Applicatieprofiel)",
